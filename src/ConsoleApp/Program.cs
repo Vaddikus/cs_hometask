@@ -47,7 +47,7 @@ namespace ConsoleApp
             //new GenericsExample().Do();
 
             // Delegates
-            //new DelegatesExample().Do();
+            new DelegatesExample().Do();
 
             // Predicates
             //new ActionsExample().Do();

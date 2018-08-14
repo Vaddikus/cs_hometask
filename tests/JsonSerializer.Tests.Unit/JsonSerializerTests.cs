@@ -1,11 +1,23 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Collections;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace JsonSerializer.Tests.Unit
 {
     public class JsonSerializerTests
     {
+
+        private readonly ITestOutputHelper output;
+
+
+        public JsonSerializerTests(ITestOutputHelper output)
+        {
+            this.output = output;
+        }
+
         [Fact]
         public void Serialize_String_ShouldReturnValidJson()
         {
@@ -63,9 +75,22 @@ namespace JsonSerializer.Tests.Unit
         private void RunTest(object value)
         {
             var expectedJson = JsonConvert.SerializeObject(value);
-
+            output.WriteLine("Expected Json: " + expectedJson);
             var actualJson = new JsonSerializer().SerializeObject(value);
-            Assert.True(JToken.DeepEquals(JObject.Parse(actualJson), JObject.Parse(expectedJson)));
-        }
+            output.WriteLine("Actual Json: " + actualJson);
+            if (value.GetType().IsPrimitive
+                || value.GetType() == typeof(string)
+                || value.GetType() == typeof(Guid)
+                || value.GetType() == typeof(DateTime)
+                || value.GetType().IsArray
+                || value is IList)
+            {
+                Assert.Equal(expectedJson, actualJson);
+            }
+            else
+            {
+                Assert.True(JToken.DeepEquals(JObject.Parse(actualJson), JObject.Parse(expectedJson)));
+            }
+            }
     }
 }
